@@ -150,7 +150,9 @@ python main.py
 
 ---
 
+
+
 ### License
-MIT License
+developed by `Soren`
 
 
