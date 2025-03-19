@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import QThreadPool
 import aiodns
 from prometheus_client import start_http_server, Counter, Gauge
+import winloop 
 
 from logger_singleton import LoggerSingleton
 from constants import VERSION
@@ -109,10 +110,8 @@ def _run_analysis_task(self, input_data: str, input_type: str, options: Optional
             self.cancel_btn.setEnabled(False)
 
 async def main():
-    # Use ProactorEventLoop on Windows instead of uvloop
     if sys.platform == 'win32':
-        loop = asyncio.ProactorEventLoop()
-        asyncio.set_event_loop(loop)
+        winloop.install()
     
     try:
         logger.info(f"Starting VPN Tracking v{VERSION}")
@@ -142,6 +141,9 @@ async def main():
 
 if __name__ == "__main__":
     try:
+        if sys.platform == 'win32':
+            asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
         logger.info("Application interrupted by user")
